@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:todo_app/services/todo_service.dart';
+import 'package:todo_app/utils/snackbar_helper.dart';
 
 class AddTodoPage extends StatefulWidget {
   final Map? todo;
@@ -64,86 +63,46 @@ class _AddTodoPageState extends State<AddTodoPage> {
   }
 
   Future<void> updateData() async {
-    // Get the data from form
     final todo = widget.todo;
     if (todo == null) {
-      print('You can not call updated without todo data');
+      showErrorMessage(
+        context,
+        message: 'You can not call updated without todo data',
+      );
       return;
     }
 
     final id = todo['id'].toString();
-    final title = titleController.text;
-    final description = descriptionController.text;
-    final body = {
-      "title": title,
-      "description": description,
-    };
 
-    // Submit data to the server
-    final response = await http.patch(
-      Uri.parse('https://todo-api.dimasoktafianto.my.id/api/todos/$id/update'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body),
-    );
+    final isSuccess = await TodoService.updateTodo(id, body);
 
-    // Show success or fail message based on status
-    if (response.statusCode == 200) {
-      showSuccessMessage('successfully updated.');
+    if (isSuccess) {
+      showSuccessMessage(context, message: 'successfully updated.');
     } else {
-      showErrorMessage('failed to update.');
+      showErrorMessage(context, message: 'failed to update.');
     }
   }
 
   Future<void> submitData() async {
-    // Get the data from form
-    final title = titleController.text;
-    final description = descriptionController.text;
-    final body = {
-      "title": title,
-      "description": description,
-    };
+    final isSuccess = await TodoService.addTodo(body);
 
-    // Submit data to the server
-    final response = await http.post(
-      Uri.parse('https://todo-api.dimasoktafianto.my.id/api/todos/store'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body),
-    );
-
-    // Show success or fail message based on status
-    if (response.statusCode == 201) {
+    if (isSuccess) {
       titleController.text = '';
       descriptionController.text = '';
 
-      showSuccessMessage('successfully created.');
+      showSuccessMessage(context, message: 'successfully created.');
     } else {
-      showErrorMessage('failed to create.');
+      showErrorMessage(context, message: 'failed to create');
     }
   }
 
-  void showSuccessMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(
-        message,
-        style: const TextStyle(color: Colors.white),
-      ),
-      backgroundColor: Colors.green,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void showErrorMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(
-        message,
-        style: const TextStyle(color: Colors.white),
-      ),
-      backgroundColor: Colors.red,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  Map get body {
+    // Get the data from form
+    final title = titleController.text;
+    final description = descriptionController.text;
+    return {
+      "title": title,
+      "description": description,
+    };
   }
 }
