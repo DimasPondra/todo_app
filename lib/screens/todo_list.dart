@@ -36,14 +36,29 @@ class _TodoListPageState extends State<TodoListPage> {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index] as Map;
+                final id = item['id'].toString();
+
                 return ListTile(
                   leading: CircleAvatar(child: Text('${index + 1}')),
                   title: Text(item['title']),
                   subtitle: Text(item['description']),
-                  trailing: PopupMenuButton(itemBuilder: (context) {
+                  trailing: PopupMenuButton(onSelected: (value) {
+                    if (value == 'edit') {
+                      // Open edit page
+                    } else if (value == 'delete') {
+                      // Delete and remove the item
+                      deleteById(id);
+                    }
+                  }, itemBuilder: (context) {
                     return [
-                      const PopupMenuItem(child: Text('edit')),
-                      const PopupMenuItem(child: Text('delete')),
+                      const PopupMenuItem(
+                        child: Text('edit'),
+                        value: 'edit',
+                      ),
+                      const PopupMenuItem(
+                        child: Text('delete'),
+                        value: 'delete',
+                      ),
                     ];
                   }),
                 );
@@ -62,6 +77,20 @@ class _TodoListPageState extends State<TodoListPage> {
       builder: (context) => const AddTodoPage(),
     );
     Navigator.push(context, route);
+  }
+
+  Future<void> deleteById(String id) async {
+    final response = await http.delete(
+      Uri.parse('https://todo-api.dimasoktafianto.my.id/api/todos/$id/delete'),
+    );
+
+    if (response.statusCode == 200) {
+      final filtered =
+          items.where((element) => element['id'].toString() != id).toList();
+      setState(() {
+        items = filtered;
+      });
+    }
   }
 
   Future<void> fetchTodo() async {
