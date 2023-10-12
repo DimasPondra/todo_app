@@ -34,12 +34,12 @@ class TodoCard extends StatelessWidget {
         }, itemBuilder: (context) {
           return [
             const PopupMenuItem(
-              child: Text('edit'),
               value: 'edit',
+              child: Text('edit'),
             ),
             const PopupMenuItem(
-              child: Text('delete'),
               value: 'delete',
+              child: Text('delete'),
             ),
           ];
         }),

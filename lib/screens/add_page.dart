@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/services/todo_service.dart';
 import 'package:todo_app/utils/snackbar_helper.dart';

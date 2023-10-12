@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/screens/add_page.dart';
 import 'package:todo_app/services/todo_service.dart';
@@ -29,7 +31,6 @@ class _TodoListPageState extends State<TodoListPage> {
       ),
       body: Visibility(
         visible: isLoading,
-        child: const Center(child: CircularProgressIndicator()),
         replacement: RefreshIndicator(
           onRefresh: fetchTodo,
           child: Visibility(
@@ -37,7 +38,7 @@ class _TodoListPageState extends State<TodoListPage> {
             replacement: Center(
               child: Text(
                 'No Todo Item',
-                style: Theme.of(context).textTheme.headline3,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
             ),
             child: ListView.builder(
@@ -55,6 +56,7 @@ class _TodoListPageState extends State<TodoListPage> {
                 }),
           ),
         ),
+        child: const Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: navigateToAddPage,
